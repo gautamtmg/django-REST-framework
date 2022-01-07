@@ -6,3 +6,6 @@ class BookSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=80)
     author = serializers.CharField(max_length=80)
     price = serializers.IntegerField(default=0)
+
+    def create(self, validated__data):  # this validated_data comes in dictionary form
+        return Book.objects.create(**validated__data)
