@@ -104,3 +104,59 @@ class BookSerializer(serializers.Serializer):
         return Book.objects.create(**validated__data)
 
 ```
+
+### To GET, Update and Delete particular one
+> views.py
+```python
+
+@csrf_exempt
+def bookDetailView(request, pk):
+
+    try:
+        book = Book.objects.get(pk = pk)
+
+    except Book.DoesNotExist:
+        return HttpResponse(status= 404)
+
+
+    if request.method == "DELETE":
+        book.delete()
+        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+    elif request.method == "GET":
+        serializer = BookSerializer(book)
+        return JsonResponse(serializer.data, safe=False)
+
+
+    elif request.method == "PUT":
+        jsonData = JSONParser().parse(request)
+        serializer = BookSerializer(book, data = jsonData)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, safe=False)
+
+        else:
+            return JsonResponse(serializer.errors, safe=False)
+```
+
+#### For PUT request, create update() function in serializer class
+> serializers.py
+```python
+class BookSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=80)
+    author = serializers.CharField(max_length=80)
+    price = serializers.IntegerField(default=0)
+
+    def create(self, validated_data):  # this validated_data comes in dictionary form
+        return Book.objects.create(**validated_data)
+
+
+    def update(self, instance, validated_data):
+        newBook = Book(**validated_data)
+        newBook.id = instance.id
+        newBook.save()
+        return newBook
+
+````
