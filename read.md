@@ -230,3 +230,58 @@ class BookSerializer(serializers.ModelSerializer):
         # Whicf field you wan to serialize
         fields = '__all__'
 ```
+
+## Class Based View
+| Function Based View  | Class Based View |
+| -------------------- | ---------------  |
+| def view():          | class BookView() |
+| if get:              | get()            |
+| if post:             | post()           |
+| if put:              | put()            |
+| if delete:           | delete()         |
+
+
+```python
+...
+from django.http import Http404
+
+# classed Based View
+class BookListView(APIView):
+    
+    def get(self, request):
+        books = Book.objects.all()
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        serializer = BookSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+class BookDetailView(APIView):
+
+    def get_book(self,pk):
+        try:
+            return Book.objects.get(pk=pk)
+        except Book.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        book = self.get_book(pk)
+        serializer = BookSerializer(book)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        book = self.get_book(pk)
+        serializer = BookSerializer(book, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+    
+    def delete(self, request, pk):
+        book = self.get_book(pk)
+        book.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    ```
