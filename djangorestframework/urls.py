@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from app.views import bookListView, bookDetailView
 from using_decorators.views import BookListView as book, BookDetailView
 urlpatterns = [
@@ -25,5 +25,6 @@ urlpatterns = [
     # path('api/book/using-decorator/<int:pk>', bookDetail),
     path('api/book/serializer-class/', book.as_view()),
     path('api/book/serializer-class/<int:pk>', BookDetailView.as_view()),
+    path('api/', include('nestedserializer.urls')),
 
 ]

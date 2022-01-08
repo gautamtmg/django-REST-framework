@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'using_decorators',
+    'nestedserializer',
 
     'rest_framework'
 ]

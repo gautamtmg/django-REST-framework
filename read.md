@@ -234,7 +234,7 @@ class BookSerializer(serializers.ModelSerializer):
 ## Class Based View
 | Function Based View  | Class Based View |
 | -------------------- | ---------------  |
-| def view():          | class BookView() |
+| def bookView():      | class BookView() |
 | if get:              | get()            |
 | if post:             | post()           |
 | if put:              | put()            |
@@ -284,4 +284,51 @@ class BookDetailView(APIView):
         book = self.get_book(pk)
         book.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    ```
+```
+
+
+# Nested Serializer
+
+> models.py
+```python
+from django.db import models
+
+# Create your models here.
+class Category(models.Model):
+    name = models.CharField(max_length=80)
+
+    def __str__(self):
+        return self.name
+
+class Book(models.Model):
+    title = models.CharField(max_length=50)
+    author = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='books')
+    price = models.IntegerField(default=0)
+
+
+    def __str__(self):
+        return self.title
+```
+
+> serializers.py
+```python
+from django.db import models
+from django.db.models import fields
+from rest_framework import serializers
+from .models import Book, Category
+
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    # books = BookSerializer(many=True, read_only=True)
+    class Meta:
+        model = Category
+        fields = "__all__"
+
+class BookSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
+    class Meta:
+        model = Book
+        fields = "__all__"
+```
