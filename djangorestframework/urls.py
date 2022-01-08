@@ -16,8 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from app.views import bookListView, bookDetailView
+from using_decorators.views import bookListView as book, bookDetailView as bookDetail
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/book/', bookListView),
     path('api/book/<int:pk>', bookDetailView),
+    path('api/book/using-decorator/', book),
+    path('api/book/using-decorator/<int:pk>', bookDetail),
+
 ]
